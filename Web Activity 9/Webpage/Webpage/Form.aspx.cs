@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Script.Serialization;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Xml.Linq;
 
 public partial class Form : System.Web.UI.Page
 {
@@ -18,19 +19,29 @@ public partial class Form : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-
         
     }
 
-    
+    protected void openSearch(object sender, EventArgs e)
+    {
+        SearchPanel.Visible = true;
+        CreatePanel.Visible = false;
+    }
 
-    protected void rfid_search_submit(object sender, EventArgs e)
+    protected void openCreate(object sender, EventArgs e)
+    {
+        createMessage.Visible = false;
+        SearchPanel.Visible = false;
+        CreatePanel.Visible = true;
+    }
+
+    protected void rfidSearchSubmit(object sender, EventArgs e)
     {
         updateMessage.Visible = true;
         string rfid = rfid_textbox.Text;
         string url = database_textbox.Text;
 
-        string result = doGetRequest("http://" + url + "/api/pet/id/" + rfid);
+        string result = doBasicRequest("http://" + url + "/api/pet/id/" + rfid, "GET");
         if (result.Equals("ERROR"))
         {
             SearchResults.Visible = false;
@@ -66,10 +77,10 @@ public partial class Form : System.Web.UI.Page
         box.Visible = true;
     }
 
-    private string doGetRequest(string url)
+    private string doBasicRequest(string url, string method)
     {
         HttpWebRequest serviceRequest = (HttpWebRequest)WebRequest.Create(url);
-        serviceRequest.Method = "GET";
+        serviceRequest.Method = method;
         try
         {
             HttpWebResponse serviceResponse = (HttpWebResponse)serviceRequest.GetResponse();
@@ -84,10 +95,10 @@ public partial class Form : System.Web.UI.Page
         }
     }
 
-    private string doPutRequest(string url, dynamic pet)
+    private string doDataRequest(string url, dynamic pet, string method)
     {
         HttpWebRequest serviceRequest = (HttpWebRequest)WebRequest.Create(url);
-        serviceRequest.Method = "PUT";
+        serviceRequest.Method = method;
         serviceRequest.ContentType = "application/json";
 
         JavaScriptSerializer js = new JavaScriptSerializer();
@@ -114,15 +125,23 @@ public partial class Form : System.Web.UI.Page
         }
     }
 
-   
-
-    protected void showPetUpdateButton(object sender, EventArgs e)
+    protected void deletePet(object sender, EventArgs e)
     {
-        UpdatePetButton.Visible = true;
-        updateMessage.Visible = false;
+        string rfid = loadedPet["id"].ToString();
+        string url = database_textbox.Text;
+
+        string result = doBasicRequest("http://" + url + "/api/pet/id/" + rfid, "DELETE");
+
+        if (!result.Equals("ERROR"))
+        {
+            SearchResults.Visible = false;
+        }
+
+        updateMessage.Text = "Error deleting pet.";
+        updateMessage.Visible = true;
     }
 
-    protected void postPetChanges(object sender, EventArgs e)
+    protected void putPetChanges(object sender, EventArgs e)
     {
 
        foreach (string s in petFields) {
@@ -132,7 +151,7 @@ public partial class Form : System.Web.UI.Page
 
         string petId = loadedPet["id"].ToString();
         string url = database_textbox.Text;
-        string result = doPutRequest("http://" + url + "/api/pet/id/" + petId, loadedPet);
+        string result = doDataRequest("http://" + url + "/api/pet/id/" + petId, loadedPet, "PUT");
 
         if (!result.Equals("ERROR")) {
             updateMessage.Text = "Update successful!";
@@ -145,6 +164,35 @@ public partial class Form : System.Web.UI.Page
         }
     }
 
+    protected void createPet(object sender, EventArgs e)
+    {
+        string petId = rfid_textbox_create.Text;
+        string pet = "{\"id\":" + petId + ",";
 
+        foreach (string s in petFields)
+        {
+            TextBox textBox = SearchResults.FindControl(s + "Create") as TextBox;
+            pet += "\"" + s + "\":\"" + textBox.Text + "\",";
+        }
+
+        pet = pet.Substring(0, pet.Length - 1) + "}";
+        JavaScriptSerializer js = new JavaScriptSerializer();
+        dynamic pet2 = js.DeserializeObject(pet);
+
+        string url = database_create_textbox.Text;
+        string result = doDataRequest("http://" + url + "/api/pet", pet2, "POST");
+
+        if (!result.Equals("ERROR"))
+        {
+            createMessage.Text = "Creation successful!";
+            createMessage.Visible = true;
+            UpdatePetButton.Visible = true;
+        }
+        else
+        {
+            createMessage.Text = "Error creating pet.";
+            createMessage.Visible = true;
+        }
+    }
 }
  

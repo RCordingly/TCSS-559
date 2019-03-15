@@ -46,20 +46,43 @@ namespace Activity7._2.Controllers
         [Route("api/pet")]
         public HttpResponseMessage createPet([FromBody] Pet pet)
         {
-            int newId = pet.id;
+            //try
+           // {
+                int newId = pet.id;
 
-            //Make sure a pet does not already exist.
-            if (getPetById(newId) == null)
+                //Make sure a pet does not already exist.
+                if (getPetById(newId) != null)
+                {
+                    return Request.CreateResponse(HttpStatusCode.Conflict);
+                }
+
+                petDatabase.Add(pet);
+                
+                return Request.CreateResponse(HttpStatusCode.Created, pet);
+            /*} catch (Exception e)
             {
-                return Request.CreateResponse(HttpStatusCode.Conflict);
+                return Request.CreateResponse(HttpStatusCode.BadRequest); ;
+            }*/
+        }
+
+        //Remove a pet from the database.
+        [HttpDelete]
+        [Route("api/pet/id/{id:int}")]
+        public HttpResponseMessage deletePet(int id)
+        {
+            Pet result = getPetById(id);
+
+            var response = Request.CreateResponse(HttpStatusCode.OK);
+            if (result == null)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest);
             }
 
-            petDatabase.Add(pet);
+            petDatabase.Remove(result);
 
-            var response = Request.CreateResponse(HttpStatusCode.Created, pet);
             return response;
         }
-        
+
         //Replace pet #id with a new pet.
         [HttpPut]
         [Route("api/pet/id/{id:int}")]
