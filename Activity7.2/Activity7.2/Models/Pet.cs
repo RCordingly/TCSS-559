@@ -13,11 +13,12 @@ namespace Activity7._2.Models
         public string petType { get; set; }
         public string petBreed { get; set; }
         public string petVaccinations { get; set; }
-        public int petAge { get; set; }
+        public string petAge { get; set; }
 
         public string ownerName { get; set; }
         public string ownerEmail { get; set; }
+        public string ownerPhone { get; set; }
         public string ownerAddress { get; set; }
-        public int ownerZip { get; set; }
+        public string ownerZip { get; set; }
     }
 }

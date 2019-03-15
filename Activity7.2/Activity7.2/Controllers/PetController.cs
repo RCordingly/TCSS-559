@@ -13,8 +13,8 @@ namespace Activity7._2.Controllers
         //The database of pet objects.
         static List<Pet> petDatabase = new List<Pet>()
         {
-            new Pet{ id = 0, petName = "Daisy", petType = "Dog", petBreed = "Labrador", petVacinations = "ALL", petAge = 8},
-            new Pet{ id = 1, petName = "Cooper", petType = "Dog", petBreed = "Labrador", petVacinations = "None", petAge = 1}
+            new Pet{ id = 0, petName = "Daisy", petType = "Dog", petBreed = "Labrador", petVaccinations = "ALL", petAge = "8", ownerName = "Robert Cordingly", ownerEmail="robertcordingly@gmail.com", ownerPhone="2533813091"},
+            new Pet{ id = 1, petName = "Cooper", petType = "Dog", petBreed = "Labrador", petVaccinations = "None", petAge = "1", ownerName = "Gary", ownerZip="98498"}
         };
 
         //Get all of the pets.
@@ -74,6 +74,7 @@ namespace Activity7._2.Controllers
             }
 
             petDatabase.Add(pet);
+            petDatabase.Remove(oldPet);
 
             var response = Request.CreateResponse(HttpStatusCode.OK);
             return response;

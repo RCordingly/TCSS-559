@@ -19,13 +19,9 @@
         <div class="auto-style1">
             <strong>PET ID</strong>
         </div>
-        <asp:UpdatePanel ID="UpdatePanel1" runat="server" OnLoad="UpdatePanel1_Load">
+        <asp:UpdatePanel ID="BasePanel" runat="server">
             <ContentTemplate>
-                <asp:Timer ID="Timer1" runat="server" OnTick="Timer1_Tick" Interval="10000">
-                </asp:Timer>
-                <asp:Label ID="year" runat="server"></asp:Label>
-                &nbsp;&nbsp;
-                <asp:Label ID="text" runat="server"></asp:Label>
+                
             </ContentTemplate>
         </asp:UpdatePanel>
         <p>
@@ -34,45 +30,72 @@
         <p>
             ______________________________________________________________________________________________________________________________________
         </p>
-        <div class="auto-style1">
-            Pet Look Up
-        </div>
-        <p>
-            Search for a pet by RFID.
-        </p>
-        <!--<p>
-            <asp:Label ID="trivia_question" runat="server"></asp:Label>
-        </p>-->
-        <p>
-            Database URL:
-            <asp:TextBox ID="database_textbox" Text="localhost:62312" runat="server"></asp:TextBox>
-        </p>
-        <p>
-            RFID:
-            <asp:TextBox ID="rfid_textbox" runat="server"></asp:TextBox>
-            <asp:Button ID="rfid_submit" runat="server" Text="Search" OnClick="rfid_search_submit" />
-        </p>
-        <p>
-            <asp:Label ID="trivia_checkanswer" runat="server"></asp:Label>
-        </p>
-        <p>
-            <asp:Label ID="rfid_message" runat="server" Visible="False" ></asp:Label>
-        </p>
-        <p>
-            ______________________________________________________________________________________________________________________________________
-        </p>
-
-        <asp:UpdatePanel ID="SearchResults" runat="server" Visible="False">
+         <asp:UpdatePanel ID="SearchPanel" runat="server" Visible="True">
             <ContentTemplate>
-
                 <div class="auto-style1">
-                    Search Results...
+                    Pet Look Up
                 </div>
+                <p>
+                    Search for a pet by RFID.
+                </p>
+                <!--<p>
+                    <asp:Label ID="trivia_question" runat="server"></asp:Label>
+                </p>-->
+                <p>
+                    Database URL:
+                    <asp:TextBox ID="database_textbox" Text="localhost:62312" runat="server"></asp:TextBox>
+                </p>
+                <p>
+                    RFID:
+                    <asp:TextBox ID="rfid_textbox" runat="server"></asp:TextBox>
+                    <asp:Button ID="rfid_submit" runat="server" Text="Search" OnClick="rfid_search_submit" />
+                </p>
+                <p>
+                    <asp:Label ID="trivia_checkanswer" runat="server"></asp:Label>
+                </p>
+                <p>
+                    <asp:Label ID="rfid_message" runat="server" Visible="False" ></asp:Label>
+                </p>
+                <p>
+                    ______________________________________________________________________________________________________________________________________
+                </p>
 
-                <p>Pet Name: <asp:TextBox ID="PetName" runat="server" Visible="False"></asp:TextBox></p>
-                <p>Pet Breed: <asp:TextBox ID="PetBreed" runat="server" Visible="False"></asp:TextBox></p>
+                <asp:UpdatePanel ID="SearchResults" runat="server" Visible="False">
+                    <ContentTemplate>
+
+                        <div class="auto-style1">
+                            Pet Details:
+                        </div>
+
+                        <p>Name: <asp:TextBox ID="petName" runat="server" Visible="False"></asp:TextBox></p>
+                        <p>Type: <asp:TextBox ID="petType" runat="server" Visible="False"></asp:TextBox></p>
+                        <p>Breed: <asp:TextBox ID="petBreed" runat="server" Visible="False"></asp:TextBox></p>
+                        <p>Age: <asp:TextBox ID="petAge" runat="server" Visible="False"></asp:TextBox></p>
+                        <p>Vaccinations: <asp:TextBox ID="petVaccinations" runat="server" Visible="False"></asp:TextBox></p>
+
+                        <div class="auto-style1">
+                            Owner Details:
+                        </div>
+
+                        <p>Name: <asp:TextBox ID="ownerName" runat="server" Visible="False"></asp:TextBox></p>
+                        <p>Email: <asp:TextBox ID="ownerEmail" runat="server" Visible="False"></asp:TextBox></p>
+                        <p>Phone: <asp:TextBox ID="ownerPhone" runat="server" Visible="False"></asp:TextBox></p>
+                        <p>Address: <asp:TextBox ID="ownerAddress" runat="server" Visible="False"></asp:TextBox></p>
+                        <p>Zip: <asp:TextBox ID="ownerZip" runat="server" Visible="False"></asp:TextBox></p>
+
+                        <br/>
+
+                        <p>
+                             <asp:Button ID="UpdatePetButton" runat="server" Text="Save Changes.." OnClick="postPetChanges" Visible="True" />
+                        <p/>
+
+                         <p>
+                            <asp:Label ID="updateMessage" runat="server" Visible="False" ></asp:Label>
+                        </p>
                 
-            </ContentTemplate>
+                    </ContentTemplate>
+                </asp:UpdatePanel>
+                </ContentTemplate>
         </asp:UpdatePanel>
 
     </form>
