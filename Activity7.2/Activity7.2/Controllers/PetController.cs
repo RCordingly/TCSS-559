@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -13,8 +12,8 @@ namespace Activity7._2.Controllers
         //The database of pet objects.
         static List<Pet> petDatabase = new List<Pet>()
         {
-            new Pet{ id = 0, petName = "Daisy", petType = "Dog", petBreed = "Labrador", petVaccinations = "ALL", petAge = "8", ownerName = "Robert Cordingly", ownerEmail="robertcordingly@gmail.com", ownerPhone="2533813091"},
-            new Pet{ id = 1, petName = "Cooper", petType = "Dog", petBreed = "Labrador", petVaccinations = "None", petAge = "1", ownerName = "Gary", ownerZip="98498"}
+            new Pet{ id = 0, petName = "Daisy", petType = "Dog", petBreed = "yellow lab", petVaccinations = "ALL", petAge = "8", ownerName = "Robert Cordingly", ownerEmail="robertcordingly@gmail.com", ownerPhone="2533813091"},
+            new Pet{ id = 1, petName = "Cooper", petType = "Dog", petBreed = "black lab", petVaccinations = "None", petAge = "1", ownerName = "Gary", ownerZip="98498"}
         };
 
         //Get all of the pets.
@@ -46,23 +45,18 @@ namespace Activity7._2.Controllers
         [Route("api/pet")]
         public HttpResponseMessage createPet([FromBody] Pet pet)
         {
-            //try
-           // {
-                int newId = pet.id;
+            int newId = pet.id;
 
-                //Make sure a pet does not already exist.
-                if (getPetById(newId) != null)
-                {
-                    return Request.CreateResponse(HttpStatusCode.Conflict);
-                }
-
-                petDatabase.Add(pet);
-                
-                return Request.CreateResponse(HttpStatusCode.Created, pet);
-            /*} catch (Exception e)
+            //Make sure a pet does not already exist.
+            if (getPetById(newId) != null)
             {
-                return Request.CreateResponse(HttpStatusCode.BadRequest); ;
-            }*/
+                return Request.CreateResponse(HttpStatusCode.Conflict);
+            }
+
+            petDatabase.Add(pet);
+                
+            return Request.CreateResponse(HttpStatusCode.Created, pet);
+          
         }
 
         //Remove a pet from the database.

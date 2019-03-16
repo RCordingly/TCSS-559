@@ -10,6 +10,20 @@
             font-size: x-large;
             color: #FFFFCC;
             background-color: #0066FF;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+        .divider {
+            font-size: xx-small;
+            background-color: #808080;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+        .img{
+            height: 200px;
+            float: right;
         }
     </style>
 </head>
@@ -17,7 +31,7 @@
     <form id="form1" runat="server">
         <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
         <div class="auto-style1">
-            <strong>&nbsp;&nbsp;PET ID</strong>
+            <strong>PET ID</strong>
         </div>
         <asp:UpdatePanel ID="BasePanel" runat="server">
             <ContentTemplate>
@@ -29,17 +43,50 @@
                     <asp:Button ID="SearchButton" runat="server" Text="Search" OnClick="openSearch" />
                     &nbsp;&nbsp;&nbsp;
                     <asp:Button ID="CreateButton" runat="server" Text="Create" OnClick="openCreate" />
+                    &nbsp;&nbsp;&nbsp;
+                    <asp:Button ID="LoginSignup" runat="server" Text="Login / Signup" OnClick="openUser" />
                 </p>
-                <p>
-                    ______________________________________________________________________________________________________________________________________
-                </p>
+                <div class="divider">
+                    <p>
+                        &nbsp;
+                    </p>
+                </div>
+
+                <!-- USER PANEL -->
+
+                <asp:UpdatePanel ID="UserPanel" runat="server" Visible="False">
+                    <ContentTemplate>
+                        <div class="auto-style1">
+                            Login / Sign Up
+                        </div>
+                        <p>
+                            <p>Email: <asp:TextBox ID="ownerUsername" runat="server"></asp:TextBox></p>
+                            <p>Password: <asp:TextBox ID="ownerPassword" runat="server"></asp:TextBox></p>
+                            <p><asp:TextBox ID="newPassword" Text="New Password" runat="server" Visible ="False"></asp:TextBox></p>
+                            <p><asp:TextBox ID="repeatPassword" Text="Repeat Password" runat="server" Visible ="False"></asp:TextBox></p>
+
+                            <asp:Button ID="UserSubmit" runat="server" Text="Submit" OnClick="submitUser" />
+
+                            <asp:Button ID="ModeToggle" runat="server" Text="Sign Up.." OnClick="userModeToggle" />
+
+                            <p>
+                                <asp:Label ID="UserLabel" runat="server" Visible="False" ></asp:Label>
+                            </p>
+                        </p>
+                        <div class="divider">
+                            <p>
+                                &nbsp;
+                            </p>
+                        </div>
+                    </ContentTemplate>
+                </asp:UpdatePanel>
 
                 <!-- CREATE PANEL -->
 
                 <asp:UpdatePanel ID="CreatePanel" runat="server" Visible="False">
                     <ContentTemplate>
                         <div class="auto-style1">
-                            &nbsp;&nbsp;Pet Creation
+                            Pet Creation
                         </div>
                         <p>
                             &nbsp;&nbsp;&nbsp;Add a new pet to the database.
@@ -77,9 +124,11 @@
                         <p>
                             <asp:Label ID="createMessage" runat="server" Visible="False" ></asp:Label>
                         </p>
-                        <p>
-                            ______________________________________________________________________________________________________________________________________
-                        </p>
+                        <div class="divider">
+                            <p>
+                                &nbsp;
+                            </p>
+                        </div>
                         </ContentTemplate>
                     </asp:UpdatePanel>
 
@@ -88,7 +137,7 @@
                  <asp:UpdatePanel ID="SearchPanel" runat="server" Visible="False">
                     <ContentTemplate>
                         <div class="auto-style1">
-                            &nbsp;&nbsp;Pet Look Up
+                            Pet Look Up
                         </div>
                         <p>
                             &nbsp;&nbsp;&nbsp;Search for a pet by RFID.
@@ -105,40 +154,69 @@
                         <p>
                             <asp:Label ID="rfid_message" runat="server" Visible="False" ></asp:Label>
                         </p>
-                        <p>
-                            ______________________________________________________________________________________________________________________________________
-                        </p>
+                        <div class="divider">
+                            <p>
+                                &nbsp;
+                            </p>
+                        </div>
 
-                        <!-- SEARCH RESULTS PANEL -->
+                        <!-- SEARCH WIDGET PANEL -->
 
-                        <asp:UpdatePanel ID="SearchResults" runat="server" Visible="False">
+                        <asp:UpdatePanel ID="WidgetPanel" runat="server" Visible="False">
                             <ContentTemplate>
                                 <div class="auto-style1">
-                                    &nbsp;&nbsp;&nbsp;Pet Details:
+                                    <asp:Label ID="petNameLabel" runat="server" Visible="True" ></asp:Label>
                                 </div>
-                                <p>Name: <asp:TextBox ID="petName" runat="server" Visible="False"></asp:TextBox></p>
-                                <p>Type: <asp:TextBox ID="petType" runat="server" Visible="False"></asp:TextBox></p>
-                                <p>Breed: <asp:TextBox ID="petBreed" runat="server" Visible="False"></asp:TextBox></p>
-                                <p>Age: <asp:TextBox ID="petAge" runat="server" Visible="False"></asp:TextBox></p>
-                                <p>Vaccinations: <asp:TextBox ID="petVaccinations" runat="server" Visible="False"></asp:TextBox></p>
-                                <div class="auto-style1">
-                                    &nbsp;&nbsp;&nbsp;Owner Details:
-                                </div>
-                                <p>Name: <asp:TextBox ID="ownerName" runat="server" Visible="False"></asp:TextBox></p>
-                                <p>Email: <asp:TextBox ID="ownerEmail" runat="server" Visible="False"></asp:TextBox></p>
-                                <p>Phone: <asp:TextBox ID="ownerPhone" runat="server" Visible="False"></asp:TextBox></p>
-                                <p>Address: <asp:TextBox ID="ownerAddress" runat="server" Visible="False"></asp:TextBox></p>
-                                <p>Zip: <asp:TextBox ID="ownerZip" runat="server" Visible="False"></asp:TextBox></p>
-                                <br/>
                                 <p>
-                                    &nbsp;&nbsp;
-                                    <asp:Button ID="UpdatePetButton" runat="server" Text="Save Changes.." OnClick="putPetChanges" Visible="True" />
-                                    &nbsp;&nbsp;&nbsp;
-                                    <asp:Button ID="DeletePetButton" runat="server" Text="Delete Pet" OnClick="deletePet" Visible="True" />
-                                <p/>
-                                <p>
-                                    <asp:Label ID="updateMessage" runat="server" Visible="False" ></asp:Label>
+                                    <asp:Image CssClass="img" runat ="server" ID="PetImage" Visible="False"/>
                                 </p>
+                                <p>
+                                    <asp:Button ID="EditToggle" runat="server" Text="Edit..." OnClick="editToggle" Visible="True" />
+                                </p>
+                                <div class="divider">
+                                    <p>
+                                        &nbsp;
+                                    </p>
+                                </div>
+                           
+
+                                <!-- SEARCH EDIT PANEL -->
+
+                                <asp:UpdatePanel ID="SearchResults" runat="server" Visible="False">
+                                    <ContentTemplate>
+                                        <div class="auto-style1">
+                                            Pet Details:
+                                        </div>
+                                        <p>Name: <asp:TextBox ID="petName" runat="server" Visible="False"></asp:TextBox></p>
+                                        <p>Type: <asp:TextBox ID="petType" runat="server" Visible="False"></asp:TextBox></p>
+                                        <p>Breed: <asp:TextBox ID="petBreed" runat="server" Visible="False"></asp:TextBox></p>
+                                        <p>Age: <asp:TextBox ID="petAge" runat="server" Visible="False"></asp:TextBox></p>
+                                        <p>Vaccinations: <asp:TextBox ID="petVaccinations" runat="server" Visible="False"></asp:TextBox></p>
+                                        <div class="auto-style1">
+                                            Owner Details:
+                                        </div>
+                                        <p>Name: <asp:TextBox ID="ownerName" runat="server" Visible="False"></asp:TextBox></p>
+                                        <p>Email: <asp:TextBox ID="ownerEmail" runat="server" Visible="False"></asp:TextBox></p>
+                                        <p>Phone: <asp:TextBox ID="ownerPhone" runat="server" Visible="False"></asp:TextBox></p>
+                                        <p>Address: <asp:TextBox ID="ownerAddress" runat="server" Visible="False"></asp:TextBox></p>
+                                        <p>Zip: <asp:TextBox ID="ownerZip" runat="server" Visible="False"></asp:TextBox></p>
+                                        <br/>
+                                        <p>
+                                            &nbsp;&nbsp;
+                                            <asp:Button ID="UpdatePetButton" runat="server" Text="Save Changes.." OnClick="putPetChanges" Visible="True" />
+                                            &nbsp;&nbsp;&nbsp;
+                                            <asp:Button ID="DeletePetButton" runat="server" Text="Delete Pet" OnClick="deletePet" Visible="True" />
+                                        <p/>
+                                        <p>
+                                            <asp:Label ID="updateMessage" runat="server" Visible="False" ></asp:Label>
+                                        </p>
+                                        <div class="divider">
+                                            <p>
+                                                &nbsp;
+                                            </p>
+                                        </div>
+                                    </ContentTemplate>
+                                </asp:UpdatePanel>  
                             </ContentTemplate>
                         </asp:UpdatePanel>
                         </ContentTemplate>
