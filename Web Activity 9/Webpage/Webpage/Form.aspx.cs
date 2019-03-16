@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -50,14 +51,15 @@ public partial class Form : System.Web.UI.Page
 
     protected void submitUser(object sender, EventArgs e)
     {
+        UserLabel.Visible = true;
+        UserLabel.Text = "Loading...";
+
         string email = ownerUsername.Text;
         string password = ownerPassword.Text;
         string url = database_textbox.Text;
         if (newPassword.Visible)
         {
-            dynamic user = new {};
-            user.username = email;
-            user.petIds = new int[] { };
+            dynamic user = new { username = email, password = "", petIds = new int[] { } };
             string newPass = newPassword.Text;
             string result = doDataRequest("http://" + url + "/api/owners", user, "POST", new string[] { "password", password, "newPassword", newPass });
 
@@ -75,25 +77,33 @@ public partial class Form : System.Web.UI.Page
         } else if (repeatPassword.Visible)
         {
             string repeatPass = repeatPassword.Text;
-            dynamic user = new { };
-            user.username = email;
-            user.petIds = new int[] { };
-            string result = doDataRequest("http://" + url + "/api/owners", user, "POST", new string[] { "password", password, "newPassword", repeatPass });
 
-            if (!result.Equals("ERROR"))
+            if (!repeatPass.Equals(password))
             {
                 UserLabel.Visible = true;
-                UserLabel.Text = "Account created.";
+                UserLabel.Text = "Passwords do not match.";
             }
             else
             {
-                UserLabel.Visible = true;
-                UserLabel.Text = "Error creating account. Account may already exist.";
+
+                dynamic user = new { username = email, password = "", petIds = new int[] { } };
+                string result = doDataRequest("http://" + url + "/api/owners", user, "POST", new string[] { "password", password, "newPassword", repeatPass });
+
+                if (!result.Equals("ERROR"))
+                {
+                    UserLabel.Visible = true;
+                    UserLabel.Text = "Account created.";
+                }
+                else
+                {
+                    UserLabel.Visible = true;
+                    UserLabel.Text = "Error creating account. Account may already exist.";
+                }
             }
 
         } else
         {
-            string result = doBasicRequest("http://" + url + "/api/owners/validate", "POST", new string[] { "username", email, "password", password });
+            string result = doBasicRequest("http://" + url + "/api/owners/validate", "POST", new string[] { "username", email, "password", password});
             if (!result.Equals("ERROR"))
             {
                 UserLabel.Visible = true;
@@ -101,9 +111,11 @@ public partial class Form : System.Web.UI.Page
             } else
             {
                 UserLabel.Visible = true;
-                UserLabel.Text = "Error validating email and password.";
+                UserLabel.Text = "Error validating email or password.";
             }
         }
+        //UserLabel.Visible = true;
+        //UserLabel.Text = "Words?";
     }
 
     protected void userModeToggle(object sender, EventArgs e)
@@ -126,10 +138,9 @@ public partial class Form : System.Web.UI.Page
             repeatPassword.Visible = false;
             ModeToggle.Text = "Sign Up..";
         }
-
     }
 
-        protected void rfidSearchSubmit(object sender, EventArgs e)
+    protected void rfidSearchSubmit(object sender, EventArgs e)
     {
         updateMessage.Visible = true;
         rfid_message.Visible = false;
@@ -177,10 +188,12 @@ public partial class Form : System.Web.UI.Page
     {
         HttpWebRequest serviceRequest = (HttpWebRequest)WebRequest.Create(url);
         serviceRequest.Method = method;
+        serviceRequest.Accept = "application/json";
 
-        for (var i = 0; i < headers.Length; i += 2)
+        for (var i = 0; i < headers.Length; i++)
         {
             serviceRequest.Headers.Add(headers[i], headers[i + 1]);
+            i++;
         }
 
         try
@@ -190,7 +203,6 @@ public partial class Form : System.Web.UI.Page
             Encoding encode = System.Text.Encoding.GetEncoding("utf-8");
             StreamReader readStream = new StreamReader(receiveStream, encode, true);
             return readStream.ReadToEnd();
-
         }
         catch (System.Net.WebException e)
         {
@@ -205,9 +217,14 @@ public partial class Form : System.Web.UI.Page
 
     private string doDataRequest(string url, dynamic pet, string method, string[] headers)
     {
+        return doDataRequest(url, pet, method, headers, "application/json");
+    }
+
+    private string doDataRequest(string url, dynamic pet, string method, string[] headers, string contentType)
+    {
         HttpWebRequest serviceRequest = (HttpWebRequest)WebRequest.Create(url);
         serviceRequest.Method = method;
-        serviceRequest.ContentType = "application/json";
+        serviceRequest.ContentType = contentType;
 
         for (var i = 0; i < headers.Length; i += 2)
         {
@@ -255,7 +272,8 @@ public partial class Form : System.Web.UI.Page
         }
 
         //Update Image
-        if (loadedPet["petBreed"] != null || !loadedPet["petBreed"].Equals("")) {
+        if (loadedPet["petBreed"] != null && !loadedPet["petBreed"].Equals(""))
+        {
             string url = "https://faroo-faroo-web-search.p.rapidapi.com/api?q=" + loadedPet["petBreed"];
             string[] headers = { "X-RapidAPI-Key", "gZi9wXlPr0mshb5QAyNa6Fih9ywpp1yRBpdjsnkGyjBpRededz" };
             string result = doBasicRequest(url, "GET", headers);
@@ -274,9 +292,42 @@ public partial class Form : System.Web.UI.Page
                     }
                 }
             }
+        } else
+        {
+            PetImage.Visible = false;
         }
 
+        //Map Image
+        if (loadedPet["ownerZip"] != null && !loadedPet["ownerZip"].Equals(""))
+        {
+            string zip = loadedPet["ownerZip"];
+            string results = GetLatLong(zip);
+            if (!results.Equals(""))
+            {
+                string lat = results.Split(';')[4];
+                string lng = results.Split(';')[5];
+                MapImage.ImageUrl = "https://static-maps.yandex.ru/1.x/?lang=en_US&ll=" + lng + "," + lat + "&spn=0.1,0.1&l=map";
+                //MapImage.ImageUrl = "https://static-maps.yandex.ru/1.x/?lang=en_US&ll=-122.98824,47.043451&spn=0.1,0.1&l=map";
+                MapImage.Visible = true;
+                PetImage.Visible = true;
+            } else
+            {
+                Console.WriteLine("Error loading map.");
+            }
+            
+        } else
+        {
+            Console.WriteLine("Error reading properties.");
+            MapImage.Visible = false;
+        }
+    }
 
+    public static bool propertyExists(dynamic settings, string name)
+    {
+        if (settings is ExpandoObject)
+            return ((IDictionary<string, object>)settings).ContainsKey(name);
+
+        return settings.GetType().GetProperty(name) != null;
     }
 
     protected void deletePet(object sender, EventArgs e)
@@ -356,6 +407,40 @@ public partial class Form : System.Web.UI.Page
     protected void editToggle(object sender, EventArgs e)
     {
         SearchResults.Visible = !SearchResults.Visible;
+    }
+
+    /**
+    *  Run the first web request. Get Lat and Long from supplied IP address.
+    */
+    private string GetLatLong(string someZip)
+    {
+        //Construct the HTTP Request
+        HttpWebRequest serviceRequest = (HttpWebRequest)WebRequest.Create("https://api.ip2location.com/?zip=" + someZip + "&key=EAVOBZXNSL&package=WS5");
+        serviceRequest.Method = "GET";
+        serviceRequest.ContentType = "text/xml; charset=utf-8";
+        serviceRequest.ContentLength = 0;
+
+        //Send the HTTP request and analyze the response.
+        HttpWebResponse serviceResponse = (HttpWebResponse)serviceRequest.GetResponse();
+
+        //Check to make sure the request was successful.
+        if (serviceResponse.StatusCode == HttpStatusCode.OK)
+        {
+            //Gets the stream associated with the response.
+            Stream receiveStream = serviceResponse.GetResponseStream();
+            Encoding encode = System.Text.Encoding.GetEncoding("utf-8");
+
+            //Pipes the stream to a higher level stream reader with the required encoding format.
+            StreamReader readStream = new StreamReader(receiveStream, encode, true);
+
+            //Return the results of the web service.
+            return readStream.ReadToEnd();
+        }
+        else
+        {
+            //Return nothing in the event of an error.
+            return "";
+        }
     }
 
 }

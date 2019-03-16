@@ -66,7 +66,7 @@
                             <p><asp:TextBox ID="repeatPassword" Text="Repeat Password" runat="server" Visible ="False"></asp:TextBox></p>
 
                             <asp:Button ID="UserSubmit" runat="server" Text="Submit" OnClick="submitUser" />
-
+                            &nbsp;&nbsp;&nbsp;
                             <asp:Button ID="ModeToggle" runat="server" Text="Sign Up.." OnClick="userModeToggle" />
 
                             <p>
@@ -169,6 +169,9 @@
                                 </div>
                                 <p>
                                     <asp:Image CssClass="img" runat ="server" ID="PetImage" Visible="False"/>
+                                </p>
+                                <p>
+                                    <asp:Image CssClass="img" runat ="server" ID="MapImage" Visible="False"/>
                                 </p>
                                 <p>
                                     <asp:Button ID="EditToggle" runat="server" Text="Edit..." OnClick="editToggle" Visible="True" />
