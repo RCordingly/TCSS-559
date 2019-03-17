@@ -30,9 +30,12 @@
 <body>
     <form id="form1" runat="server">
         <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
-        <div class="auto-style1">
+        <div class="banner">
             <strong>PET ID</strong>
         </div>
+
+        <!-- BASE PANEL -->
+
         <asp:UpdatePanel ID="BasePanel" runat="server">
             <ContentTemplate>
                 <p>
@@ -160,7 +163,7 @@
                             </p>
                         </div>
 
-                        <!-- SEARCH WIDGET PANEL -->
+                        <!-- WIDGET PANEL -->
 
                         <asp:UpdatePanel ID="WidgetPanel" runat="server" Visible="False">
                             <ContentTemplate>
@@ -174,8 +177,12 @@
                                     <asp:Image CssClass="img" runat ="server" ID="MapImage" Visible="False"/>
                                 </p>
                                 <p>
+                                    <asp:Label ID="VaxLabel" runat="server" Visible="False" ></asp:Label>
+                                </p>
+                                <p>
                                     <asp:Button ID="EditToggle" runat="server" Text="Edit..." OnClick="editToggle" Visible="True" />
                                 </p>
+
                                 <div class="divider">
                                     <p>
                                         &nbsp;

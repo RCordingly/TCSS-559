@@ -13,8 +13,14 @@ using System.Xml.Linq;
 
 public partial class Form : System.Web.UI.Page
 {
+    /**
+     * The currently loaded pet.
+     */
     static dynamic loadedPet = null;
 
+    /**
+     * All fields of a pet.
+     */
     private string[] petFields = { "petName", "petType", "petBreed", "petAge", "petVaccinations", "ownerName",
         "ownerEmail", "ownerPhone", "ownerAddress", "ownerZip" };
 
@@ -23,6 +29,9 @@ public partial class Form : System.Web.UI.Page
 
     }
 
+    /**
+     * Open the search section of the webpage and close all others.
+     */
     protected void openSearch(object sender, EventArgs e)
     {
         CreatePanel.Visible = false;
@@ -30,6 +39,9 @@ public partial class Form : System.Web.UI.Page
         UserPanel.Visible = false;
     }
 
+    /**
+     * Open the create section of the webpage and close all others.
+     */
     protected void openCreate(object sender, EventArgs e)
     {
         createMessage.Visible = false;
@@ -39,6 +51,9 @@ public partial class Form : System.Web.UI.Page
         UserPanel.Visible = false;
     }
 
+    /**
+     *  Open the user section of the webpage and close all others.
+     */
     protected void openUser(object sender, EventArgs e)
     {
         createMessage.Visible = false;
@@ -49,6 +64,11 @@ public partial class Form : System.Web.UI.Page
         UserLabel.Visible = false;
     }
 
+    /**
+     * Submit a user.
+     * The web request activated dependeds on the content of the page. 
+     * This method may change a users password, create a new account, or log a user in.
+     */
     protected void submitUser(object sender, EventArgs e)
     {
         UserLabel.Visible = true;
@@ -114,10 +134,11 @@ public partial class Form : System.Web.UI.Page
                 UserLabel.Text = "Error validating email or password.";
             }
         }
-        //UserLabel.Visible = true;
-        //UserLabel.Text = "Words?";
     }
 
+    /**
+     * Change the content of the user page when the mode is pressed.
+     */
     protected void userModeToggle(object sender, EventArgs e)
     {
         if (ModeToggle.Text.Equals("Sign Up.."))
@@ -140,6 +161,9 @@ public partial class Form : System.Web.UI.Page
         }
     }
 
+    /**
+     * Start a search processes. Activated when search button is clicked
+     */
     protected void rfidSearchSubmit(object sender, EventArgs e)
     {
         updateMessage.Visible = true;
@@ -174,6 +198,9 @@ public partial class Form : System.Web.UI.Page
         }
     }
 
+    /**
+     * Update the content in a text box.
+     */
     private void UpdateTextBox(TextBox box, dynamic pet, string field)
     {
         if (pet[field] != null)
@@ -184,11 +211,19 @@ public partial class Form : System.Web.UI.Page
         box.Visible = true;
     }
 
+    /**
+     * Execute a web request without any concent in the body.
+     */
+    private string doBasicRequest(string url, string method)
+    {
+        return doBasicRequest(url, method, new string[] { });
+    }
     private string doBasicRequest(string url, string method, string[] headers)
     {
         HttpWebRequest serviceRequest = (HttpWebRequest)WebRequest.Create(url);
         serviceRequest.Method = method;
         serviceRequest.Accept = "application/json";
+        serviceRequest.ContentLength = 0;
 
         for (var i = 0; i < headers.Length; i++)
         {
@@ -210,16 +245,17 @@ public partial class Form : System.Web.UI.Page
         }
     }
 
-    private string doBasicRequest(string url, string method)
+    /**
+     * Execute a web request and put a dynamic in the body of the request. 
+     */
+    private string doDataRequest(string url, dynamic pet, string method)
     {
-        return doBasicRequest(url, method, new string[] { });
+        return doDataRequest(url, pet, method, new string[] { });
     }
-
     private string doDataRequest(string url, dynamic pet, string method, string[] headers)
     {
         return doDataRequest(url, pet, method, headers, "application/json");
     }
-
     private string doDataRequest(string url, dynamic pet, string method, string[] headers, string contentType)
     {
         HttpWebRequest serviceRequest = (HttpWebRequest)WebRequest.Create(url);
@@ -255,11 +291,10 @@ public partial class Form : System.Web.UI.Page
         }
     }
 
-    private string doDataRequest(string url, dynamic pet, string method)
-    {
-        return doDataRequest(url, pet, method, new string[] { });
-    }
 
+    /**
+     * Controls the content in the widget area of the webpage.
+     */
     protected void updateWidgets(object sender, EventArgs e)
     {
         //Label
@@ -269,6 +304,27 @@ public partial class Form : System.Web.UI.Page
         } else
         {
             petNameLabel.Text = "About Your Pet:";
+        }
+
+        //Recommended Vaccinations
+        if (loadedPet["petAge"] != null && loadedPet["petType"] != null)
+        {
+            string url = database_textbox.Text;
+            string[] headers = { "age", loadedPet["petAge"], "type", loadedPet["petType"]};
+            string result = doBasicRequest("http://" + url + "/api/pet/vax", "POST", headers);
+            if (result.Equals("ERROR"))
+            {
+                VaxLabel.Visible = false;
+            } else
+            {
+                JavaScriptSerializer js = new JavaScriptSerializer();
+                var data = js.Deserialize<dynamic>(result);
+                VaxLabel.Text = "Vaccination Recommendation: " + data["VaxStats"]["message"];
+                VaxLabel.Visible = true;
+            }
+        }
+        {
+
         }
 
         //Update Image
@@ -307,11 +363,10 @@ public partial class Form : System.Web.UI.Page
                 string lat = results.Split(';')[4];
                 string lng = results.Split(';')[5];
                 MapImage.ImageUrl = "https://static-maps.yandex.ru/1.x/?lang=en_US&ll=" + lng + "," + lat + "&spn=0.1,0.1&l=map";
-                //MapImage.ImageUrl = "https://static-maps.yandex.ru/1.x/?lang=en_US&ll=-122.98824,47.043451&spn=0.1,0.1&l=map";
                 MapImage.Visible = true;
-                PetImage.Visible = true;
             } else
             {
+                MapImage.Visible = false;
                 Console.WriteLine("Error loading map.");
             }
             
@@ -322,6 +377,9 @@ public partial class Form : System.Web.UI.Page
         }
     }
 
+    /**
+     * Checks to make sure a dynamic has a specific property.
+     */
     public static bool propertyExists(dynamic settings, string name)
     {
         if (settings is ExpandoObject)
@@ -330,6 +388,9 @@ public partial class Form : System.Web.UI.Page
         return settings.GetType().GetProperty(name) != null;
     }
 
+    /**
+     * Removes a pet from the database using DELETE.
+     */
     protected void deletePet(object sender, EventArgs e)
     {
         string rfid = loadedPet["id"].ToString();
@@ -346,6 +407,9 @@ public partial class Form : System.Web.UI.Page
         updateMessage.Visible = true;
     }
 
+    /**
+     * Executes a PUT request to update the values of a pet in the database.
+     */
     protected void putPetChanges(object sender, EventArgs e)
     {
 
@@ -373,6 +437,9 @@ public partial class Form : System.Web.UI.Page
         }
     }
 
+    /**
+     * Executes a POST request to create a new pet in the database.
+     */
     protected void createPet(object sender, EventArgs e)
     {
         string petId = rfid_textbox_create.Text;
@@ -404,6 +471,9 @@ public partial class Form : System.Web.UI.Page
         }
     }
 
+    /**
+     * Toggles the visibility of the search area.
+     */
     protected void editToggle(object sender, EventArgs e)
     {
         SearchResults.Visible = !SearchResults.Visible;
@@ -442,5 +512,4 @@ public partial class Form : System.Web.UI.Page
             return "";
         }
     }
-
 }

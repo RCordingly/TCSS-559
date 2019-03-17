@@ -4,6 +4,8 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using Activity7._2.Models;
+using System.Xml;
+using System;
 
 namespace Activity7._2.Controllers
 {
@@ -95,6 +97,70 @@ namespace Activity7._2.Controllers
 
             var response = Request.CreateResponse(HttpStatusCode.OK);
             return response;
+        }
+
+        [HttpPost]
+        [Route("api/pet/vax")]
+        public XmlDocument getVaxxed()
+        {
+            XmlDocument dom = new XmlDocument();
+            XmlElement locationStats = dom.CreateElement("VaxStats");
+            dom.AppendChild(locationStats);
+
+            int age = 0;
+            try
+            {
+                age = Int32.Parse(Request.Headers.GetValues("age").First());
+                string type = Request.Headers.GetValues("type").First();
+
+                if (!type.Equals("Dog") && !type.Equals("dog"))
+                {
+                    XmlElement field1 = dom.CreateElement("message");
+                    locationStats.AppendChild(field1);
+                    XmlText text1 = dom.CreateTextNode("Vaccination recommendations only available for dogs.");
+                    field1.AppendChild(text1);
+                    return dom;
+                }
+
+                string nextVaccination = "0";
+
+                switch (age)
+                {
+                    case (0):
+                        nextVaccination = "Distemper, measles, parainfluenva, bordatella. At 6 to 8 weeks old.\nDHPP every 4 weeks (3 doses).";
+                        break;
+                    case (1):
+                        nextVaccination = "DHPP and rabies at 1 year old.";
+                        break;
+                    case (2):
+                        nextVaccination = "DHPP and rabies at 3 years old.";
+                        break;
+                    case (3):
+                        nextVaccination = "DHPP and rabies at 5 years old.";
+                        break;
+                    case (4):
+                        nextVaccination = "DHPP and rabies at 5 years old.";
+                        break;
+                }
+                if (age >= 5)
+                {
+                    nextVaccination = "DHPP every 1 to 2 years. Rabies every 1 to 3 years.";
+                }
+
+                XmlElement field = dom.CreateElement("message");
+                locationStats.AppendChild(field);
+                XmlText text = dom.CreateTextNode(nextVaccination);
+                field.AppendChild(text);
+                return dom;
+            }
+            catch (Exception e)
+            {
+                XmlElement field = dom.CreateElement("message");
+                locationStats.AppendChild(field);
+                XmlText text = dom.CreateTextNode("Failed to load vaccinations recommendations.");
+                field.AppendChild(text);
+                return dom;
+            }
         }
 
         /**
