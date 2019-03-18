@@ -47,7 +47,7 @@ public partial class Form : System.Web.UI.Page
         createMessage.Visible = false;
         SearchPanel.Visible = false;
         CreatePanel.Visible = true;
-        WidgetPanel.Visible = false;
+        //WidgetPanel.Visible = false;
         UserPanel.Visible = false;
     }
 
@@ -59,7 +59,7 @@ public partial class Form : System.Web.UI.Page
         createMessage.Visible = false;
         SearchPanel.Visible = false;
         CreatePanel.Visible = false;
-        WidgetPanel.Visible = false;
+        //WidgetPanel.Visible = false;
         UserPanel.Visible = true;
         UserLabel.Visible = false;
     }
@@ -128,6 +128,16 @@ public partial class Form : System.Web.UI.Page
             {
                 UserLabel.Visible = true;
                 UserLabel.Text = "Account logged in!";
+
+                result = doBasicRequest("http://" + url + "/api/owners/getPets", "POST",  new string[] { "username", email }, "Pets");
+
+                if (!result.Equals("ERROR"))
+                {
+                    ownerPets.Visible = true;
+                    result = result.Replace(",", "<br/>");
+                    PetList.Text = result;
+                }
+
             } else
             {
                 UserLabel.Visible = true;
@@ -136,9 +146,30 @@ public partial class Form : System.Web.UI.Page
         }
     }
 
+    protected void ownerAddPet(object sender, EventArgs e)
+    {
+        string email = ownerUsername.Text;
+        string password = ownerPassword.Text;
+        string url = database_textbox.Text;
+        string pet = PetInput.Text;
+        string result = doBasicRequest("http://" + url + "/api/owners/addPet", "POST", new string[] { "username", email , "pet", pet});
+
+        if (!result.Equals("ERROR"))
+        {
+            result = doBasicRequest("http://" + url + "/api/owners/getPets", "POST", new string[] { "username", email }, "Pets");
+
+            if (!result.Equals("ERROR"))
+            {
+                ownerPets.Visible = true;
+                result = result.Replace(",", "<br/>");
+                PetList.Text = result;
+            }
+        }
+    }
+
     /**
-     * Change the content of the user page when the mode is pressed.
-     */
+        * Change the content of the user page when the mode is pressed.
+        */
     protected void userModeToggle(object sender, EventArgs e)
     {
         if (ModeToggle.Text.Equals("Sign Up.."))
@@ -238,6 +269,37 @@ public partial class Form : System.Web.UI.Page
             Encoding encode = System.Text.Encoding.GetEncoding("utf-8");
             StreamReader readStream = new StreamReader(receiveStream, encode, true);
             return readStream.ReadToEnd();
+        }
+        catch (System.Net.WebException e)
+        {
+            return "ERROR";
+        }
+    }
+    private string doBasicRequest(string url, string method, string[] headers, string getHeader)
+    {
+        HttpWebRequest serviceRequest = (HttpWebRequest)WebRequest.Create(url);
+        serviceRequest.Method = method;
+        serviceRequest.Accept = "application/json";
+        serviceRequest.ContentLength = 0;
+
+        for (var i = 0; i < headers.Length; i++)
+        {
+            serviceRequest.Headers.Add(headers[i], headers[i + 1]);
+            i++;
+        }
+
+        try
+        {
+            HttpWebResponse serviceResponse = (HttpWebResponse)serviceRequest.GetResponse();
+
+
+            return serviceResponse.Headers[getHeader];
+            
+
+            //    Stream receiveStream = serviceResponse.GetResponseStream();
+            //Encoding encode = System.Text.Encoding.GetEncoding("utf-8");
+            //StreamReader readStream = new StreamReader(receiveStream, encode, true);
+            //return readStream.ReadToEnd();
         }
         catch (System.Net.WebException e)
         {
@@ -360,8 +422,10 @@ public partial class Form : System.Web.UI.Page
             string results = GetLatLong(zip);
             if (!results.Equals(""))
             {
-                string lat = results.Split(';')[4];
-                string lng = results.Split(';')[5];
+                JavaScriptSerializer js = new JavaScriptSerializer();
+                var data = js.Deserialize<dynamic>(results);
+                string lat = data["lat"].ToString();
+                string lng = data["lng"].ToString();
                 MapImage.ImageUrl = "https://static-maps.yandex.ru/1.x/?lang=en_US&ll=" + lng + "," + lat + "&spn=0.1,0.1&l=map";
                 MapImage.Visible = true;
             } else
@@ -401,6 +465,7 @@ public partial class Form : System.Web.UI.Page
         if (!result.Equals("ERROR"))
         {
             SearchResults.Visible = false;
+            WidgetPanel.Visible = false;
         }
 
         updateMessage.Text = "Error deleting pet.";
@@ -484,8 +549,10 @@ public partial class Form : System.Web.UI.Page
     */
     private string GetLatLong(string someZip)
     {
-        //Construct the HTTP Request
-        HttpWebRequest serviceRequest = (HttpWebRequest)WebRequest.Create("https://api.ip2location.com/?zip=" + someZip + "&key=EAVOBZXNSL&package=WS5");
+    //Construct the HTTP Request
+
+    
+        HttpWebRequest serviceRequest = (HttpWebRequest)WebRequest.Create("https://www.zipcodeapi.com/rest/85X8oCWvGax6PFBUY8ScmlyV4weaJR4asI0O6Gt3oYNAsDM7w2Tw94rQlUpKZ0Yu/info.json/" + someZip + "/degrees");
         serviceRequest.Method = "GET";
         serviceRequest.ContentType = "text/xml; charset=utf-8";
         serviceRequest.ContentLength = 0;

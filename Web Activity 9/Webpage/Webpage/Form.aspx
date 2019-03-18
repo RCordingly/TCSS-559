@@ -324,6 +324,39 @@
                                         </p>
                                     </p>
                                 </div>
+
+                                <!-- USER Pets -->
+
+                                <asp:UpdatePanel ID="ownerPets" runat="server" Visible="False">
+                                    <ContentTemplate>
+                                        <h2>
+                                            &nbsp;
+                                        </h2>
+
+                                        <div class="module"> 
+                                            <h3>
+                                                Your Pet RFIDs:
+                                            </h3>
+                                            <h4>
+                                                The pets assigned to your account.
+                                            </h4>
+                                            <p>
+                                                <asp:Label ID="PetList" runat="server" ></asp:Label>
+                                            </p>
+                                            <br/>
+                                            <h3>
+                                                Add or Remove RFIDs:
+                                            </h3>
+                                            <h4>
+                                                Add a new pet to your account or remove an existing one.
+                                            </h4>
+                                            <p>RFID: <asp:TextBox ID="PetInput" runat="server"></asp:TextBox></p>
+                                            <p>
+                                                <asp:Button ID="AddPet" runat="server" Text="Submit" OnClick="ownerAddPet" Visible="True" />
+                                            </p>
+                                        </div>
+                                    </ContentTemplate>
+                                </asp:UpdatePanel>
                             </ContentTemplate>
                         </asp:UpdatePanel>
 
@@ -444,6 +477,9 @@
                                                     <h3>
                                                         Pet Details:
                                                     </h3>
+                                                    <h4>
+                                                        Information about the pet.
+                                                    </h4>
                                                     <p>Name: <asp:TextBox ID="petName" runat="server" Visible="False"></asp:TextBox></p>
                                                     <p>Type: <asp:TextBox ID="petType" runat="server" Visible="False"></asp:TextBox></p>
                                                     <p>Breed: <asp:TextBox ID="petBreed" runat="server" Visible="False"></asp:TextBox></p>
@@ -452,6 +488,9 @@
                                                     <h3>
                                                         Owner Details:
                                                     </h3>
+                                                    <h4>
+                                                        Pet owner contact information.
+                                                    </h4>
                                                     <p>Name: <asp:TextBox ID="ownerName" runat="server" Visible="False"></asp:TextBox></p>
                                                     <p>Email: <asp:TextBox ID="ownerEmail" runat="server" Visible="False"></asp:TextBox></p>
                                                     <p>Phone: <asp:TextBox ID="ownerPhone" runat="server" Visible="False"></asp:TextBox></p>

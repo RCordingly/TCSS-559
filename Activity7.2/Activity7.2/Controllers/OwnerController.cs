@@ -55,10 +55,44 @@ namespace Activity7._2.Controllers
             try
             {
                 string username = Request.Headers.GetValues("username").First();
-                string password = Request.Headers.GetValues("password").First();
-                if (isUser(username, password))
+                Owner owner = findOwner(username);
+                if (owner != null)
                 {
-                    return Request.CreateResponse(HttpStatusCode.OK, findOwner(username).petIds);
+                    HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK);
+                    response.Headers.Add("Pets", owner.petIds);
+                    return response;
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.NotFound);
+                }
+            }
+            catch (Exception e)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest);
+            }
+        }
+
+        [HttpPost]
+        [Route("api/owners/addPet")]
+        public HttpResponseMessage addPet()
+        {
+            try
+            {
+                string username = Request.Headers.GetValues("username").First();
+                string pet = Request.Headers.GetValues("pet").First();
+                Owner owner = findOwner(username);
+                if (owner != null)
+                {
+                    string[] newArray = new string[owner.petIds.Length + 1];
+                    for (int i = 0; i < owner.petIds.Length; i++)
+                    {
+                        newArray[i] = owner.petIds[i];
+                    }
+                    newArray[owner.petIds.Length] = pet;
+                    owner.petIds = newArray;
+                    HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK);
+                    return response;
                 }
                 else
                 {
