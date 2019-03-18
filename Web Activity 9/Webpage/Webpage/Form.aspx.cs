@@ -158,7 +158,7 @@ public partial class Form : System.Web.UI.Page
         {
             result = doBasicRequest("http://" + url + "/api/owners/getPets", "POST", new string[] { "username", email }, "Pets");
 
-            if (!result.Equals("ERROR"))
+            if (result != null && !result.Equals("ERROR"))
             {
                 ownerPets.Visible = true;
                 result = result.Replace(",", "<br/>");
@@ -234,11 +234,11 @@ public partial class Form : System.Web.UI.Page
      */
     private void UpdateTextBox(TextBox box, dynamic pet, string field)
     {
+        box.Text = "";
         if (pet[field] != null)
         {
             box.Text = pet[field].ToString();
-        }
-
+        } 
         box.Visible = true;
     }
 
@@ -291,8 +291,7 @@ public partial class Form : System.Web.UI.Page
         try
         {
             HttpWebResponse serviceResponse = (HttpWebResponse)serviceRequest.GetResponse();
-
-
+            
             return serviceResponse.Headers[getHeader];
             
 
@@ -359,7 +358,7 @@ public partial class Form : System.Web.UI.Page
      */
     protected void updateWidgets(object sender, EventArgs e)
     {
-        //Label
+        //Labels
         if (loadedPet["petName"] != null)
         {
             petNameLabel.Text = "About " + loadedPet["petName"] + ":";
@@ -367,6 +366,44 @@ public partial class Form : System.Web.UI.Page
         {
             petNameLabel.Text = "About Your Pet:";
         }
+
+        if (loadedPet["petBreed"] != null)
+        {
+            BreedLabel.Text = "Breed: " + loadedPet["petBreed"] + ".";
+            BreedLabel.Visible = true;
+        }
+        else
+        {
+            BreedLabel.Visible = false;
+        }
+
+        if (loadedPet["petAge"] != null)
+        {
+            AgeLabel.Text = "Age: " + loadedPet["petAge"] + " years old.";
+            AgeLabel.Visible = true;
+        }
+        else
+        {
+            AgeLabel.Visible = false;
+        }
+
+        if (loadedPet["ownerPhone"] != null)
+        {
+            SendSMSButton.Visible = true;
+        } else
+        {
+            SendSMSButton.Visible = false;
+        }
+
+        if (loadedPet["ownerEmail"] != null)
+        {
+            sendEmailButton.Visible = true;
+        }
+        else
+        {
+            sendEmailButton.Visible = false;
+        }
+
 
         //Recommended Vaccinations
         if (loadedPet["petAge"] != null && loadedPet["petType"] != null)
@@ -384,9 +421,6 @@ public partial class Form : System.Web.UI.Page
                 VaxLabel.Text = "Vaccination Recommendation: " + data["VaxStats"]["message"];
                 VaxLabel.Visible = true;
             }
-        }
-        {
-
         }
 
         //Update Image
@@ -578,5 +612,16 @@ public partial class Form : System.Web.UI.Page
             //Return nothing in the event of an error.
             return "";
         }
+    }
+
+    protected void sendMessage(object sender, EventArgs e)
+    {
+        dynamic data = new { phone = loadedPet["ownerPhone"], message = "Your pet has been found!", key = "2623bedaa26dcb9f3f95e9a57ccc85e73c3fa2e0UM15lZohGmPHbgqTpd5a4rn0t" };
+        string result = doDataRequest("http://textbelt.com/text", data, "POST");
+    }
+
+    protected void sendEmail(object sender, EventArgs e)
+    {
+        System.Diagnostics.Process.Start("mailto:" + loadedPet["ownerEmail"]);
     }
 }

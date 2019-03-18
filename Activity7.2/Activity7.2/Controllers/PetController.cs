@@ -14,8 +14,9 @@ namespace Activity7._2.Controllers
         //The database of pet objects.
         static List<Pet> petDatabase = new List<Pet>()
         {
-            new Pet{ id = 0, petName = "Daisy", petType = "Dog", petBreed = "yellow lab", petVaccinations = "ALL", petAge = "8", ownerName = "Robert Cordingly", ownerEmail="robertcordingly@gmail.com", ownerPhone="2533813091"},
-            new Pet{ id = 1, petName = "Cooper", petType = "Dog", petBreed = "black lab", petVaccinations = "None", petAge = "1", ownerName = "Gary", ownerZip="98498"}
+            new Pet{ id = 0, petName = "Daisy", petType = "Dog", petBreed = "Golden Retriever", petVaccinations = "ALL", petAge = "8", ownerName = "Robert Cordingly", ownerZip="10012", ownerEmail="robertcordingly@gmail.com", ownerPhone="2533813091"},
+            new Pet{ id = 1, petName = "Cooper", petType = "Dog", petBreed = "Bloodhound", petVaccinations = "None", petAge = "2", ownerName = "Gary", ownerZip="98498"},
+            new Pet{ id = 2, petName = "Dubs", petType = "Dog", petBreed = "Husky", petVaccinations = "ALL", petAge = "158", ownerZip="98195"}
         };
 
         //Get all of the pets.

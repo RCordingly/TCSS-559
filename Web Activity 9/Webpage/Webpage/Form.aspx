@@ -30,7 +30,15 @@
         }
         .img{
             height: 200px;
-            float: right;
+            margin-left: 10px;
+            margin-right: 10px;
+            background-image: -webkit-linear-gradient(270deg,rgba(224,224,224,1.00) 0%,rgba(203,203,203,1.00) 100%);
+	        background-image: -moz-linear-gradient(270deg,rgba(224,224,224,1.00) 0%,rgba(203,203,203,1.00) 100%);
+	        background-image: -o-linear-gradient(270deg,rgba(224,224,224,1.00) 0%,rgba(203,203,203,1.00) 100%);
+	        background-image: linear-gradient(180deg,rgba(224,224,224,1.00) 0%,rgba(203,203,203,1.00) 100%);
+	        border: thin solid hsla(0,0%,54%,1.00);
+	        -webkit-box-shadow: 4px 4px 15px hsla(0,0%,77%,1.00);
+	        box-shadow: 4px 4px 15px hsla(0,0%,77%,1.00);
         }
 
         #header {
@@ -446,21 +454,33 @@
                                             &nbsp;
                                         </h2>
 
+                                        <center>
+                                        <p>
+                                                <asp:Image CssClass="img" runat ="server" ID="PetImage" Visible="False"/>
+                                                <asp:Image CssClass="img" runat ="server" ID="MapImage" Visible="False"/>
+                                            </p>
+                                            </center>
+
                                         <div class="module"> 
                                             <h3>
                                                 <asp:Label ID="petNameLabel" runat="server" Visible="True" ></asp:Label>
                                             </h3>
+                                            <h4>
+                                                Information about your pet.
+                                            </h4>
                                             <p>
-                                                <asp:Image CssClass="img" runat ="server" ID="PetImage" Visible="False"/>
+                                                <asp:Label ID="BreedLabel" runat="server" Visible="False" ></asp:Label>
                                             </p>
                                             <p>
-                                                <asp:Image CssClass="img" runat ="server" ID="MapImage" Visible="False"/>
+                                                <asp:Label ID="AgeLabel" runat="server" Visible="False" ></asp:Label>
                                             </p>
                                             <p>
                                                 <asp:Label ID="VaxLabel" runat="server" Visible="False" ></asp:Label>
                                             </p>
                                             <p>
                                                 <asp:Button ID="EditToggle" runat="server" Text="Edit..." OnClick="editToggle" Visible="True" />
+                                                <asp:Button ID="SendSMSButton" runat="server" Text="Send SMS..." OnClick="sendMessage" Visible="False" />
+                                                <asp:Button ID="sendEmailButton" runat="server" Text="Send Email..." OnClick="sendEmail" Visible="False" />
                                             </p>
                                         </div>
 
@@ -478,7 +498,7 @@
                                                         Pet Details:
                                                     </h3>
                                                     <h4>
-                                                        Information about the pet.
+                                                        Edit information about the pet.
                                                     </h4>
                                                     <p>Name: <asp:TextBox ID="petName" runat="server" Visible="False"></asp:TextBox></p>
                                                     <p>Type: <asp:TextBox ID="petType" runat="server" Visible="False"></asp:TextBox></p>
@@ -489,14 +509,13 @@
                                                         Owner Details:
                                                     </h3>
                                                     <h4>
-                                                        Pet owner contact information.
+                                                        Edit owner contact information.
                                                     </h4>
                                                     <p>Name: <asp:TextBox ID="ownerName" runat="server" Visible="False"></asp:TextBox></p>
                                                     <p>Email: <asp:TextBox ID="ownerEmail" runat="server" Visible="False"></asp:TextBox></p>
                                                     <p>Phone: <asp:TextBox ID="ownerPhone" runat="server" Visible="False"></asp:TextBox></p>
                                                     <p>Address: <asp:TextBox ID="ownerAddress" runat="server" Visible="False"></asp:TextBox></p>
                                                     <p>Zip: <asp:TextBox ID="ownerZip" runat="server" Visible="False"></asp:TextBox></p>
-                                                    <br/>
                                                     <p>
                                                         <asp:Button ID="UpdatePetButton" runat="server" Text="Save Changes.." OnClick="putPetChanges" Visible="True" />
                                                         &nbsp;&nbsp;&nbsp;
